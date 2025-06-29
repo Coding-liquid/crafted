@@ -1,7 +1,7 @@
 {
   "sections": {
     "login_form": {
-      "type": "login-form",
+      "type": "login-form-test",
       "settings": {
         "show_register_link": true,
         "show_password_reset": true,
