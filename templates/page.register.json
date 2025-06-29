@@ -1,0 +1,15 @@
+{
+  "sections": {
+    "register_form": {
+      "type": "register-form",
+      "settings": {
+        "show_terms_link": true,
+        "auto_assign_client_tag": true,
+        "redirect_after_register": "/pages/account-setup"
+      }
+    }
+  },
+  "order": [
+    "register_form"
+  ]
+} 

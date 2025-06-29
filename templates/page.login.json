@@ -1,0 +1,15 @@
+{
+  "sections": {
+    "login_form": {
+      "type": "login-form",
+      "settings": {
+        "show_register_link": true,
+        "show_password_reset": true,
+        "redirect_after_login": "/pages/client-dashboard"
+      }
+    }
+  },
+  "order": [
+    "login_form"
+  ]
+} 

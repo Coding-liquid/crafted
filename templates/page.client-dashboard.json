@@ -1,0 +1,16 @@
+{
+  "sections": {
+    "client_dashboard": {
+      "type": "client-dashboard",
+      "settings": {
+        "show_quick_stats": true,
+        "show_recent_activity": true,
+        "show_quick_actions": true,
+        "requests_per_page": 10
+      }
+    }
+  },
+  "order": [
+    "client_dashboard"
+  ]
+} 

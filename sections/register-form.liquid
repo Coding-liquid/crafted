@@ -1,0 +1,335 @@
+{% comment %}
+  Registration Form Section
+  Handles new customer registration with automatic client tag assignment
+{% endcomment %}
+
+<div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-md w-full space-y-8">
+    <div>
+      <div class="mx-auto h-12 w-12 flex items-center justify-center rounded-full bg-green-100">
+        <svg class="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+        </svg>
+      </div>
+      <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+        {{ section.settings.title | default: 'Create your account' }}
+      </h2>
+      <p class="mt-2 text-center text-sm text-gray-600">
+        {{ section.settings.subtitle | default: 'Join' }} 
+        <span class="font-medium text-indigo-600 hover:text-indigo-500">
+          {{ settings.platform_name | default: 'Crafted' }}
+        </span>
+        {{ section.settings.subtitle_suffix | default: 'to start your design journey' }}
+      </p>
+    </div>
+    
+    <div 
+      x-data="registerForm()"
+      class="mt-8 space-y-6"
+    >
+      <form 
+        @submit.prevent="handleSubmit"
+        class="space-y-6"
+      >
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <div>
+            <label for="first_name" class="block text-sm font-medium text-gray-700">
+              First name
+            </label>
+            <div class="mt-1">
+              <input 
+                id="first_name" 
+                name="customer[first_name]" 
+                type="text" 
+                autocomplete="given-name" 
+                required
+                x-model="formData.firstName"
+                :class="{ 'border-red-300': errors.firstName }"
+                class="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                placeholder="Enter your first name"
+              >
+            </div>
+            <p x-show="errors.firstName" x-text="errors.firstName" class="mt-1 text-sm text-red-600"></p>
+          </div>
+
+          <div>
+            <label for="last_name" class="block text-sm font-medium text-gray-700">
+              Last name
+            </label>
+            <div class="mt-1">
+              <input 
+                id="last_name" 
+                name="customer[last_name]" 
+                type="text" 
+                autocomplete="family-name" 
+                required
+                x-model="formData.lastName"
+                :class="{ 'border-red-300': errors.lastName }"
+                class="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                placeholder="Enter your last name"
+              >
+            </div>
+            <p x-show="errors.lastName" x-text="errors.lastName" class="mt-1 text-sm text-red-600"></p>
+          </div>
+        </div>
+
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-700">
+            Email address
+          </label>
+          <div class="mt-1">
+            <input 
+              id="email" 
+              name="customer[email]" 
+              type="email" 
+              autocomplete="email" 
+              required
+              x-model="formData.email"
+              :class="{ 'border-red-300': errors.email }"
+              class="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+              placeholder="Enter your email"
+            >
+          </div>
+          <p x-show="errors.email" x-text="errors.email" class="mt-1 text-sm text-red-600"></p>
+        </div>
+
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-700">
+            Password
+          </label>
+          <div class="mt-1">
+            <input 
+              id="password" 
+              name="customer[password]" 
+              type="password" 
+              autocomplete="new-password" 
+              required
+              x-model="formData.password"
+              :class="{ 'border-red-300': errors.password }"
+              class="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+              placeholder="Create a password"
+            >
+          </div>
+          <p x-show="errors.password" x-text="errors.password" class="mt-1 text-sm text-red-600"></p>
+        </div>
+
+        <div>
+          <label for="password_confirmation" class="block text-sm font-medium text-gray-700">
+            Confirm password
+          </label>
+          <div class="mt-1">
+            <input 
+              id="password_confirmation" 
+              name="customer[password_confirmation]" 
+              type="password" 
+              autocomplete="new-password" 
+              required
+              x-model="formData.passwordConfirmation"
+              :class="{ 'border-red-300': errors.passwordConfirmation }"
+              class="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+              placeholder="Confirm your password"
+            >
+          </div>
+          <p x-show="errors.passwordConfirmation" x-text="errors.passwordConfirmation" class="mt-1 text-sm text-red-600"></p>
+        </div>
+
+        <div class="flex items-center">
+          <input 
+            id="accept_terms" 
+            name="accept_terms" 
+            type="checkbox"
+            x-model="formData.acceptTerms"
+            required
+            class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+          >
+          <label for="accept_terms" class="ml-2 block text-sm text-gray-900">
+            I agree to the 
+            {% if section.settings.show_terms_link %}
+              <a href="/pages/terms-of-service" class="font-medium text-indigo-600 hover:text-indigo-500">
+                Terms of Service
+              </a>
+            {% else %}
+              Terms of Service
+            {% endif %}
+            and 
+            <a href="/pages/privacy-policy" class="font-medium text-indigo-600 hover:text-indigo-500">
+              Privacy Policy
+            </a>
+          </label>
+        </div>
+
+        <div>
+          <button 
+            type="submit"
+            :disabled="isSubmitting"
+            class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <span x-show="!isSubmitting">Create account</span>
+            <span x-show="isSubmitting" class="flex items-center">
+              <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Creating account...
+            </span>
+          </button>
+        </div>
+      </form>
+
+      <div class="text-center">
+        <p class="text-sm text-gray-600">
+          Already have an account? 
+          <a href="/pages/login" class="font-medium text-indigo-600 hover:text-indigo-500">
+            Sign in here
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function registerForm() {
+    return {
+      formData: {
+        firstName: '',
+        lastName: '',
+        email: '',
+        password: '',
+        passwordConfirmation: '',
+        acceptTerms: false
+      },
+      errors: {},
+      isSubmitting: false,
+      
+      async handleSubmit() {
+        this.errors = {};
+        this.isSubmitting = true;
+        
+        try {
+          // Validation
+          if (!this.formData.firstName.trim()) {
+            this.errors.firstName = 'First name is required';
+          }
+          if (!this.formData.lastName.trim()) {
+            this.errors.lastName = 'Last name is required';
+          }
+          if (!this.formData.email) {
+            this.errors.email = 'Email is required';
+          } else if (!this.isValidEmail(this.formData.email)) {
+            this.errors.email = 'Please enter a valid email address';
+          }
+          if (!this.formData.password) {
+            this.errors.password = 'Password is required';
+          } else if (this.formData.password.length < 8) {
+            this.errors.password = 'Password must be at least 8 characters long';
+          }
+          if (this.formData.password !== this.formData.passwordConfirmation) {
+            this.errors.passwordConfirmation = 'Passwords do not match';
+          }
+          if (!this.formData.acceptTerms) {
+            this.errors.acceptTerms = 'You must accept the terms of service';
+          }
+          
+          if (Object.keys(this.errors).length > 0) {
+            return;
+          }
+          
+          // Submit registration form
+          const form = document.createElement('form');
+          form.method = 'POST';
+          form.action = '/account';
+          
+          // Add form fields
+          const fields = [
+            { name: 'customer[first_name]', value: this.formData.firstName },
+            { name: 'customer[last_name]', value: this.formData.lastName },
+            { name: 'customer[email]', value: this.formData.email },
+            { name: 'customer[password]', value: this.formData.password },
+            { name: 'customer[password_confirmation]', value: this.formData.passwordConfirmation },
+            { name: 'form_type', value: 'create_customer' },
+            { name: 'utf8', value: '✓' }
+          ];
+          
+          fields.forEach(field => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = field.name;
+            input.value = field.value;
+            form.appendChild(input);
+          });
+          
+          // Add return URL
+          const returnUrlInput = document.createElement('input');
+          returnUrlInput.type = 'hidden';
+          returnUrlInput.name = 'return_to';
+          returnUrlInput.value = '{{ section.settings.redirect_after_register | default: "/pages/account-setup" }}';
+          form.appendChild(returnUrlInput);
+          
+          document.body.appendChild(form);
+          form.submit();
+          
+        } catch (error) {
+          console.error('Registration error:', error);
+          Alpine.store('agency').addNotification('Registration failed. Please try again.', 'error');
+        } finally {
+          this.isSubmitting = false;
+        }
+      },
+      
+      isValidEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+      }
+    }
+  }
+</script>
+
+{% schema %}
+{
+  "name": "Registration Form",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Create your account"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Join"
+    },
+    {
+      "type": "text",
+      "id": "subtitle_suffix",
+      "label": "Subtitle Suffix",
+      "default": "to start your design journey"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_terms_link",
+      "label": "Show terms link",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "auto_assign_client_tag",
+      "label": "Auto-assign client tag",
+      "default": true
+    },
+    {
+      "type": "url",
+      "id": "redirect_after_register",
+      "label": "Redirect after registration",
+      "default": "/pages/account-setup"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Registration Form"
+    }
+  ]
+}
+{% endschema %} 

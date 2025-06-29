@@ -1,0 +1,250 @@
+{% comment %}
+  Login Form Section
+  Handles customer authentication with role-based redirection
+{% endcomment %}
+
+<div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-md w-full space-y-8">
+    <div>
+      <div class="mx-auto h-12 w-12 flex items-center justify-center rounded-full bg-indigo-100">
+        <svg class="h-8 w-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+        </svg>
+      </div>
+      <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+        {{ section.settings.title | default: 'Sign in to your account' }}
+      </h2>
+      <p class="mt-2 text-center text-sm text-gray-600">
+        {{ section.settings.subtitle | default: 'Welcome to' }} 
+        <span class="font-medium text-indigo-600 hover:text-indigo-500">
+          {{ settings.platform_name | default: 'Crafted' }}
+        </span>
+      </p>
+    </div>
+    
+    <div 
+      x-data="loginForm()"
+      class="mt-8 space-y-6"
+    >
+      <form 
+        @submit.prevent="handleSubmit"
+        class="space-y-6"
+      >
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-700">
+            Email address
+          </label>
+          <div class="mt-1">
+            <input 
+              id="email" 
+              name="email" 
+              type="email" 
+              autocomplete="email" 
+              required
+              x-model="formData.email"
+              :class="{ 'border-red-300': errors.email }"
+              class="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+              placeholder="Enter your email"
+            >
+          </div>
+          <p x-show="errors.email" x-text="errors.email" class="mt-1 text-sm text-red-600"></p>
+        </div>
+
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-700">
+            Password
+          </label>
+          <div class="mt-1">
+            <input 
+              id="password" 
+              name="password" 
+              type="password" 
+              autocomplete="current-password" 
+              required
+              x-model="formData.password"
+              :class="{ 'border-red-300': errors.password }"
+              class="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+              placeholder="Enter your password"
+            >
+          </div>
+          <p x-show="errors.password" x-text="errors.password" class="mt-1 text-sm text-red-600"></p>
+        </div>
+
+        <div class="flex items-center justify-between">
+          <div class="flex items-center">
+            <input 
+              id="remember-me" 
+              name="remember-me" 
+              type="checkbox"
+              x-model="formData.rememberMe"
+              class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+            >
+            <label for="remember-me" class="ml-2 block text-sm text-gray-900">
+              Remember me
+            </label>
+          </div>
+
+          {% if section.settings.show_password_reset %}
+            <div class="text-sm">
+              <a href="/pages/password-reset" class="font-medium text-indigo-600 hover:text-indigo-500">
+                Forgot your password?
+              </a>
+            </div>
+          {% endif %}
+        </div>
+
+        <div>
+          <button 
+            type="submit"
+            :disabled="isSubmitting"
+            class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <span x-show="!isSubmitting">Sign in</span>
+            <span x-show="isSubmitting" class="flex items-center">
+              <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Signing in...
+            </span>
+          </button>
+        </div>
+      </form>
+
+      {% if section.settings.show_register_link %}
+        <div class="text-center">
+          <p class="text-sm text-gray-600">
+            Don't have an account? 
+            <a href="/pages/register" class="font-medium text-indigo-600 hover:text-indigo-500">
+              Sign up here
+            </a>
+          </p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<script>
+  function loginForm() {
+    return {
+      formData: {
+        email: '',
+        password: '',
+        rememberMe: false
+      },
+      errors: {},
+      isSubmitting: false,
+      
+      async handleSubmit() {
+        this.errors = {};
+        this.isSubmitting = true;
+        
+        try {
+          // Basic validation
+          if (!this.formData.email) {
+            this.errors.email = 'Email is required';
+          }
+          if (!this.formData.password) {
+            this.errors.password = 'Password is required';
+          }
+          
+          if (Object.keys(this.errors).length > 0) {
+            return;
+          }
+          
+          // Submit login form
+          const form = document.createElement('form');
+          form.method = 'POST';
+          form.action = '/account/login';
+          
+          // Add form fields
+          const emailInput = document.createElement('input');
+          emailInput.type = 'hidden';
+          emailInput.name = 'customer[email]';
+          emailInput.value = this.formData.email;
+          form.appendChild(emailInput);
+          
+          const passwordInput = document.createElement('input');
+          passwordInput.type = 'hidden';
+          passwordInput.name = 'customer[password]';
+          passwordInput.value = this.formData.password;
+          form.appendChild(passwordInput);
+          
+          if (this.formData.rememberMe) {
+            const rememberInput = document.createElement('input');
+            rememberInput.type = 'hidden';
+            rememberInput.name = 'customer[remember_me]';
+            rememberInput.value = '1';
+            form.appendChild(rememberInput);
+          }
+          
+          // Add return URL for role-based redirection
+          const returnUrlInput = document.createElement('input');
+          returnUrlInput.type = 'hidden';
+          returnUrlInput.name = 'return_to';
+          returnUrlInput.value = this.getRedirectUrl();
+          form.appendChild(returnUrlInput);
+          
+          document.body.appendChild(form);
+          form.submit();
+          
+        } catch (error) {
+          console.error('Login error:', error);
+          Alpine.store('agency').addNotification('Login failed. Please try again.', 'error');
+        } finally {
+          this.isSubmitting = false;
+        }
+      },
+      
+      getRedirectUrl() {
+        // This will be handled by Shopify's customer login
+        // We'll set up a redirect handler in the theme
+        return '/pages/client-dashboard';
+      }
+    }
+  }
+</script>
+
+{% schema %}
+{
+  "name": "Login Form",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Sign in to your account"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Welcome to"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_register_link",
+      "label": "Show register link",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_password_reset",
+      "label": "Show password reset link",
+      "default": true
+    },
+    {
+      "type": "url",
+      "id": "redirect_after_login",
+      "label": "Redirect after login",
+      "default": "/pages/client-dashboard"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Login Form"
+    }
+  ]
+}
+{% endschema %} 

@@ -11,13 +11,88 @@
     {% render 'meta-tags' %}
 
     {{ content_for_header }}
+    
+    {% # Alpine.js and Tailwind CSS %}
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script defer src="https://cdn.tailwindcss.com"></script>
+    
+    {% # Agency Platform Scripts %}
+    <script defer src="{{ 'agency-platform.js' | asset_url }}"></script>
+    
+    {% # Inject user data for Alpine store %}
+    {% if customer %}
+      <script>
+        window.agencyUser = {
+          id: {{ customer.id }},
+          email: {{ customer.email | json }},
+          firstName: {{ customer.first_name | json }},
+          lastName: {{ customer.last_name | json }},
+          tags: {{ customer.tags | json }},
+          metafields: {
+            requests: {
+              active_requests: {{ customer.metafields.requests.active_requests | default: '[]' | json }},
+              completed_requests: {{ customer.metafields.requests.completed_requests | default: '[]' | json }},
+              draft_requests: {{ customer.metafields.requests.draft_requests | default: '[]' | json }}
+            },
+            boards: {
+              personal_boards: {{ customer.metafields.boards.personal_boards | default: '[]' | json }},
+              shared_boards: {{ customer.metafields.boards.shared_boards | default: '[]' | json }}
+            },
+            preferences: {
+              notification_settings: {{ customer.metafields.preferences.notification_settings | default: '{}' | json }},
+              dashboard_layout: {{ customer.metafields.preferences.dashboard_layout | default: '{}' | json }}
+            }
+          }
+        };
+      </script>
+    {% endif %}
   </head>
 
-  <body>
+  <body class="min-h-screen bg-gray-50">
     {% sections 'header-group' %}
 
-    {{ content_for_layout }}
+    <main>
+      {{ content_for_layout }}
+    </main>
 
     {% sections 'footer-group' %}
+    
+    {% # Notification Center %}
+    <div 
+      x-data="{ 
+        notifications: Alpine.store('agency').notifications,
+        removeNotification: (id) => Alpine.store('agency').removeNotification(id),
+        markAsRead: (id) => Alpine.store('agency').markNotificationAsRead(id)
+      }"
+      x-show="notifications.length > 0"
+      x-transition
+      class="fixed top-4 right-4 z-50 space-y-2 max-w-sm"
+    >
+      <template x-for="notification in notifications" :key="notification.id">
+        <div 
+          x-show="!notification.read"
+          x-transition
+          :class="{
+            'bg-green-500': notification.type === 'success',
+            'bg-red-500': notification.type === 'error',
+            'bg-blue-500': notification.type === 'info',
+            'bg-yellow-500': notification.type === 'warning'
+          }"
+          class="text-white p-4 rounded-lg shadow-lg flex items-start justify-between"
+        >
+          <div class="flex-1">
+            <p x-text="notification.message" class="text-sm"></p>
+          </div>
+          <button 
+            @click="removeNotification(notification.id)"
+            class="ml-2 text-white hover:text-gray-200"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+      </template>
+    </div>
   </body>
 </html>

@@ -1,9 +1,9 @@
 [
   {
     "name": "theme_info",
-    "theme_name": "Skeleton",
-    "theme_version": "0.1.0",
-    "theme_author": "Shopify",
+    "theme_name": "Crafted - Design Agency Platform",
+    "theme_version": "1.0.0",
+    "theme_author": "Design Agency Platform",
     "theme_documentation_url": "https://help.shopify.com/manual/online-store/themes",
     "theme_support_url": "https://support.shopify.com/"
   },
@@ -19,7 +19,7 @@
         "id": "type_primary_font",
         "default": "work_sans_n4",
         "label": "t:general.primary"
-      },
+      }
     ]
   },
   {
@@ -77,6 +77,86 @@
         "unit": "px",
         "label": "t:labels.input_corner_radius",
         "default": 4
+      }
+    ]
+  },
+  {
+    "name": "Design Agency Platform",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Platform Configuration"
+      },
+      {
+        "type": "text",
+        "id": "platform_name",
+        "label": "Platform Name",
+        "default": "Crafted"
+      },
+      {
+        "type": "text",
+        "id": "agency_name",
+        "label": "Agency Name",
+        "default": "Your Design Agency"
+      },
+      {
+        "type": "header",
+        "content": "File Upload Settings"
+      },
+      {
+        "type": "range",
+        "id": "max_file_size_mb",
+        "min": 1,
+        "max": 50,
+        "step": 1,
+        "unit": "MB",
+        "label": "Maximum File Size",
+        "default": 10
+      },
+      {
+        "type": "text",
+        "id": "allowed_file_types",
+        "label": "Allowed File Types",
+        "default": "jpg,jpeg,png,gif,pdf,doc,docx,psd,ai,sketch",
+        "info": "Comma-separated list of file extensions"
+      },
+      {
+        "type": "header",
+        "content": "Request Settings"
+      },
+      {
+        "type": "range",
+        "id": "max_requests_per_month",
+        "min": 1,
+        "max": 100,
+        "step": 1,
+        "label": "Max Requests per Month (Basic)",
+        "default": 5
+      },
+      {
+        "type": "range",
+        "id": "max_requests_per_month_premium",
+        "min": 1,
+        "max": 500,
+        "step": 1,
+        "label": "Max Requests per Month (Premium)",
+        "default": 50
+      },
+      {
+        "type": "header",
+        "content": "Notification Settings"
+      },
+      {
+        "type": "checkbox",
+        "id": "email_notifications",
+        "label": "Email Notifications",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "browser_notifications",
+        "label": "Browser Notifications",
+        "default": true
       }
     ]
   }
