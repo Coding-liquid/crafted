@@ -13,9 +13,21 @@
       "type": "hello-world",
       "disabled": true,
       "settings": {}
+    },
+    "client_dashboard_YYJHXj": {
+      "type": "client-dashboard",
+      "name": "Client Dashboard",
+      "settings": {
+        "show_quick_stats": true,
+        "show_recent_activity": true,
+        "show_quick_actions": true,
+        "requests_per_page": 10,
+        "demo_mode": true
+      }
     }
   },
   "order": [
-    "main"
+    "main",
+    "client_dashboard_YYJHXj"
   ]
 }
