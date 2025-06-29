@@ -8,14 +8,5 @@
  * ------------------------------------------------------------
  */
 {
-  "sections": {
-    "main": {
-      "type": "hello-world",
-      "disabled": true,
-      "settings": {}
-    }
-  },
-  "order": [
-    "main"
-  ]
+  "markets": {}
 }
